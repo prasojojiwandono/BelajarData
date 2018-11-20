@@ -1,0 +1,113 @@
+install.packages("rvest")
+install.packages("dplyr")
+install.packages("neuralnet")
+install.packages("xlsx")
+
+
+
+library(rvest)
+library(dplyr)
+library(xlsx)
+library(readxl)
+setwd("D:/saham")
+thesaham <- read_excel("JII70.xlsx", sheet = "Sheet2")
+emitensyariah = thesaham
+
+errfunc = function(sesuatu,i,j){
+  tryCatch({
+    tes = gsub(pattern = ",",replacement = "",x=sesuatu)
+    bb=as.numeric(tes)
+    return(bb)},
+    warning=function(e) {
+      #message("ada masalah pada")
+      message(paste("error warning message: ",emitensyariah[i,]," baris ke ",j,sep = ""))
+      # Choose a return value in case of warning
+      return(-9999999)
+    }
+  )
+}
+
+jmlemiten=dim(emitensyariah)[1]
+tglsekarang = Sys.Date()
+jmlbarisyangdiinginkan = 30
+jmlbarisyangdiinginkan2 = 70
+str_tglrujukan = "2018-07-06"#1530810000#enam juli 2018
+tglrujukan = strptime(str_tglrujukan,format = ("%Y-%m-%d"))
+selisihrujukan=tglsekarang - as.Date.POSIXlt(tglrujukan)
+selisih_tgl_rujukan = as.numeric(selisihrujukan)
+##86400 adalah nilai selisih satu hari
+period2 = 1530810000 + (86400 * selisih_tgl_rujukan)
+period1= period2 - (86400*150)
+strperiod2 = as.character(period2)
+strperiod1 = as.character(period1)
+
+framecleansing = data.frame()
+framecleansing2 = data.frame()
+
+for(i in 1:jmlemiten){#for(i in 1:jmlemiten){
+  hitung = 0
+  sahamsyr = paste(emitensyariah[i,],".JK",sep="")
+  
+  #cobaah = paste("https://finance.yahoo.com/quote/",sahamsyr,"/history?period1=",strperiod1,"&period2=",strperiod2,"&interval=1d&filter=history&frequency=1d",sep="")
+  cobaah = paste("https://finance.yahoo.com/quote/",sahamsyr,"/history?p=",sahamsyr,sep="")
+  halamancoba <- read_html(cobaah)
+  tabelcoba <- halamancoba %>% html_table("table.W(100%)",header = NA,fill = TRUE)
+  cobalagi = data.frame(tabelcoba)
+  barisemiten = dim(cobalagi)[1]
+  
+  for(j in 1:dim(cobalagi)[1]){
+    
+    for(k in 1:6){
+      
+      if(errfunc(cobalagi[j,7],i,j)<5){
+        break
+      }else{
+        
+        if(k==1){
+          hitung = hitung + 1
+          }
+        
+        if(hitung<=jmlbarisyangdiinginkan+1){
+          
+          if(k==1){
+          
+            framecleansing[jmlbarisyangdiinginkan*(i-1)+hitung,k]=emitensyariah[i,]
+          }else if(k==6){
+            framecleansing[jmlbarisyangdiinginkan*(i-1)+hitung,k]=errfunc(cobalagi[j,7],i,j)
+          }else{
+            framecleansing[jmlbarisyangdiinginkan*(i-1)+hitung,k]=errfunc(cobalagi[j,k],i,j)
+          }
+          
+        }
+        
+        if(k==1){
+          
+          framecleansing2[jmlbarisyangdiinginkan2*(i-1)+hitung,k]=emitensyariah[i,]
+        }else if(k==6){
+          framecleansing2[jmlbarisyangdiinginkan2*(i-1)+hitung,k]=errfunc(cobalagi[j,7],i,j)
+        }else{
+          framecleansing2[jmlbarisyangdiinginkan2*(i-1)+hitung,k]=errfunc(cobalagi[j,k],i,j)
+        }
+        
+      }
+      
+    }
+    
+    if(hitung>=jmlbarisyangdiinginkan2 + 1){
+      break
+    }
+  }
+  
+  pesan = paste("progress",i,"/",jmlemiten,sep="")
+  message(pesan)
+  
+}
+
+
+sekarang = as.character(tglsekarang)
+namafile = paste("dataemitensyariah_",sekarang,".xlsx",sep="")
+write.xlsx(framecleansing,namafile)
+
+
+namafile2 = paste("datachart70_",sekarang,".xlsx",sep="")
+write.xlsx(framecleansing2,namafile2)
