@@ -1,0 +1,182 @@
+REM  *****  BASIC  *****
+
+Sub Main
+
+Dim Doc As Object
+Dim Sheet3 As Object
+Dim Sheet4 As Object
+Dim Cel3 As Object
+Dim Cel4 As Object
+Dim Cur As Object ' cursor on the cell
+Dim Range As Object ' the used range
+Dim Row As Long
+Dim Col As Long
+Dim haha As Long
+Dim hihi As Long
+Dim banyakcompany As Long
+Dim Celpersenvolum As Object
+Dim Celgradma5 As Object
+Dim Celgradma10 As Object
+Dim Celregresi As Object
+Dim Celrsi As Object
+Dim Celgradrsi As Object
+Dim Celmacd As Object
+Dim Celgradclose As Object
+Dim Celturun As Object
+Dim Celkalilipat As Object
+
+Doc = ThisComponent
+
+Sheet4 = Doc.Sheets.getByName("Sheet4")
+Sheet3 = Doc.Sheets.getByName("Sheet3")
+'''''''''''''''''''''''''''''''
+Doc.CurrentController.ActiveSheet = Sheet3
+Cur = Sheet3.createCursorByRange(Sheet3.getCellRangeByName("A1"))
+Cur.gotoEndOfUsedArea(True)
+Range = Sheet3.getCellRangeByName(Cur.AbsoluteName)
+Row = Range.RangeAddress.EndRow
+haha = Row Mod 30
+hihi = Row - haha
+banyakcompany = hihi/30
+
+for i = 0 to banyakcompany-1
+	for j = 0 to 5
+		if j = 0 then 'nama emiten
+			Cel3 = Sheet3.getCellByPosition(1,(30*i)+1)			
+			Cel4 = Sheet4.getCellByPosition(0,i+3)
+			Cel4.String = Cel3.String
+		elseif j = 1 then 'persen volume
+			Cel3 = Sheet3.getCellByPosition(33,(30*i)+1)			
+			Cel4 = Sheet4.getCellByPosition(2,i+3)
+			Cel4.value = Cel3.value		
+		elseif j = 2 then 'volum
+			Cel3 = Sheet3.getCellByPosition(6,(30*i)+1)			
+			Cel4 = Sheet4.getCellByPosition(3,i+3)
+			Cel4.value = Cel3.value			
+		elseif j = 3 then 'close
+			Cel3 = Sheet3.getCellByPosition(5,(30*i)+1)			
+			Cel4 = Sheet4.getCellByPosition(4,i+3)
+			Cel4.value = Cel3.value					
+		elseif j = 4 then 'macd
+			Cel3 = Sheet3.getCellByPosition(32,(30*i)+1)			
+			Cel4 = Sheet4.getCellByPosition(5,i+3)
+			Cel4.value = Cel3.value					
+		elseif j = 5 then 'rsi
+			Cel3 = Sheet3.getCellByPosition(20,(30*i)+1)			
+			Cel4 = Sheet4.getCellByPosition(6,i+3)
+			Cel4.value = Cel3.value					
+'		elseif j = 6 then
+'			Cel3 = Sheet3.getCellByPosition(13,(30*i)+1)			
+'			Cel4 = Sheet4.getCellByPosition(7,i+3)
+'			Cel4.value = Cel3.value					
+'		elseif j = 7 then
+'			Cel3 = Sheet3.getCellByPosition(14,(30*i)+1)			
+'			Cel4 = Sheet4.getCellByPosition(8,i+3)
+'			Cel4.value = Cel3.value					
+'		elseif j = 8 then
+'			Cel3 = Sheet3.getCellByPosition(15,(30*i)+1)			
+'			Cel4 = Sheet4.getCellByPosition(9,i+3)
+'			Cel4.value = Cel3.value		
+'		elseif j = 9 then
+'			Cel3 = Sheet3.getCellByPosition(19,(30*i)+1)			
+'			Cel4 = Sheet4.getCellByPosition(10,i+3)
+'			Cel4.value = Cel3.value			
+'		elseif j = 10 then
+'			Cel3 = Sheet3.getCellByPosition(20,(30*i)+1)			
+'			Cel4 = Sheet4.getCellByPosition(11,i+3)
+'			Cel4.value = Cel3.value			
+'		elseif j = 11 then
+'			Cel3 = Sheet3.getCellByPosition(26,(30*i)+1)			
+'			Cel4 = Sheet4.getCellByPosition(12,i+3)
+'			Cel4.value = Cel3.value			
+'		elseif j = 12 then
+'			Cel3 = Sheet3.getCellByPosition(32,(30*i)+1)			
+'			Cel4 = Sheet4.getCellByPosition(13,i+3)
+'			Cel4.value = Cel3.value		
+'		elseif j = 13 then
+'			Cel3 = Sheet3.getCellByPosition(35,(30*i)+1)			
+'			Cel4 = Sheet4.getCellByPosition(14,i+3)
+'			Cel4.value = Cel3.value						
+'		elseif j = 14 then
+'			Cel3 = Sheet3.getCellByPosition(36,(30*i)+1)			
+'			Cel4 = Sheet4.getCellByPosition(15,i+3)
+'			Cel4.value = Cel3.value			
+'		elseif j = 15 then
+'			Cel3 = Sheet3.getCellByPosition(37,(30*i)+1)			
+'			Cel4 = Sheet4.getCellByPosition(16,i+3)
+'			Cel4.value = Cel3.value
+'		elseif j = 16 then
+'			Cel3 = Sheet3.getCellByPosition(38,(30*i)+1)			
+'			Cel4 = Sheet4.getCellByPosition(17,i+3)
+'			Cel4.value = Cel3.value			
+					
+		end if	
+	next
+next
+''''''''''''''''''''''''''''''''''''''
+	Doc.CurrentController.ActiveSheet = Sheet4
+	Cur = Sheet4.createCursorByRange(Sheet4.getCellRangeByName("A4"))
+	Cur.gotoEndOfUsedArea(True)
+	Range = Sheet4.getCellRangeByName(Cur.AbsoluteName)
+	Row = Range.RangeAddress.EndRow
+	
+'	for l = 0 to Row-3
+'				Cel4 = Sheet4.getCellByPosition(1,l+3)
+'				Cel4.value = 0					
+'	next
+'	
+'	for n = 0 to Row-3
+'				Cel4 = Sheet4.getCellByPosition(1,n+3)
+'				Celpersenvolum = Sheet4.getCellByPosition(2,n+3)
+'				Celgradma5 = Sheet4.getCellByPosition(4,n+3)
+'				Celgradma10 = Sheet4.getCellByPosition(6,n+3)
+'				Celregresi = Sheet4.getCellByPosition(10,n+3)
+'				Celrsi = Sheet4.getCellByPosition(11,n+3)
+'				Celgradrsi = Sheet4.getCellByPosition(12,n+3)
+'				Celmacd = Sheet4.getCellByPosition(13,n+3)
+'				Celgradclose = Sheet4.getCellByPosition(8,n+3)
+'				Celturun = Sheet4.getCellByPosition(14,n+3)
+'				Celkalilipat = Sheet4.getCellByPosition(15,n+3)
+	
+				
+	'			if Celpersenvolum.value > 25 And Celkalilipat.value < 2.5 And Celkalilipat.value > 1 then
+	'			
+	'				Cel4.value = Cel4.value + 1
+	'				
+	'				
+	'				if Celturun.value = 1 then
+	'				
+	'					Cel4.value = Cel4.value + 1
+	'				
+	'				end if
+	'				
+	'				if Celgradma5.value > 0 then
+	'					Cel4.value = Cel4.value + 1
+	'					
+	'					if Celgradma10.value > 0 then
+	'						Cel4.value = Cel4.value + 1
+	'					end if
+	'					
+	'				end if
+	'				
+	'				if Celregresi.value > 0 then 
+	'					Cel4.value = Cel4.value + 1				
+	'				end if
+	'				
+	'				if Celmacd.value = 2 then
+	'					Cel4.value = Cel4.value + 1				
+	'				end if
+	'				
+	'				if Celrsi.value < 30 And Celgradrsi.value > 0 then
+	'					Cel4.value = Cel4.value + 1				
+	'				end if
+	'				
+	'			elseif 	(Celpersenvolum.value > 300 Or Celkalilipat.value < -4) And Celgradclose.value < 0 then
+	'				Cel4.value = Cel4.value + 1
+	'			else
+	'				Cel4.value = 0
+	'			end if
+'	
+'	next
+
+End Sub

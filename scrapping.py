@@ -66,17 +66,17 @@ def create_stock_chart(df_saham, emiten):
                   width = 1600,
                   height = 1000)
 
-def time_code():
-    perhari = 86400
-    nov22 = 1606003200
-    tgl_nov22 = datetime(2020,11,22)
-    delta = datetime.now() - tgl_nov22
-    delta_day = delta.days
-    kode_now = nov22 + (delta_day * perhari)
-    kode_past = kode_now - (perhari * 140)
-    return str(kode_now), str(kode_past)
+# def time_code():
+#     perhari = 86400
+#     nov22 = 1606003200
+#     tgl_nov22 = datetime(2020,11,22)
+#     delta = datetime.now() - tgl_nov22
+#     delta_day = delta.days
+#     kode_now = nov22 + (delta_day * perhari)
+#     kode_past = kode_now - (perhari * 140)
+#     return str(kode_now), str(kode_past)
 
-kode_now, kode_past = time_code()
+# kode_now, kode_past = time_code()
 
 baris = 1
 baris_analyst = 1
@@ -84,7 +84,7 @@ for i in range(sheet_jii_list.nrows):
     pd_data = []
     emiten = sheet_jii_list.cell_value(i, 0)
     print(f'proses {emiten} {i}/{sheet_jii_list.nrows}')
-    source_html = 'https://finance.yahoo.com/quote/'+ emiten +'.JK/history?period1='+kode_past+'&period2='+kode_now+'&interval=1d&filter=history&frequency=1d&includeAdjustedClose=true'
+    source_html = 'https://finance.yahoo.com/quote/'+emiten+'.JK/history?p='+emiten+'.JK'
     src = requests.get(source_html).text
     soup = BeautifulSoup(src,'lxml')
     table = soup.findAll('table')[0]
@@ -151,7 +151,7 @@ for i in range(sheet_jii_list.nrows):
         if count > 0:
             pd_data.append(pd_data_kolom)
 
-        if baris_emiten > 70:
+        if baris_emiten > 90:
             df_saham = pd.DataFrame(pd_data,
                 columns=['JII', 'date', 'Open','High','Low','Close','Volume'])
             
