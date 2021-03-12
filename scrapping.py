@@ -7,9 +7,9 @@ import plotly.graph_objects as go
 import plotly
 import pandas as pd
 
-  
+# percobaan
 
-
+sebelum = datetime.now()
  
 loc = ("/home/prasojo/belajar/BelajarData/dataset/saham/JII.xlsx")
  
@@ -17,8 +17,8 @@ wb_jii_list = xlrd.open_workbook(loc)
 sheet_jii_list = wb_jii_list.sheet_by_index(0)
 
  
-for i in range(sheet_jii_list.nrows):
-    emiten = sheet_jii_list.cell_value(i, 0)
+# for i in range(sheet_jii_list.nrows):
+#     emiten = sheet_jii_list.cell_value(i, 0)
 
 wb_analyst = Workbook() 
 # wb_chart = Workbook() 
@@ -81,16 +81,20 @@ def create_stock_chart(df_saham, emiten):
 baris = 1
 baris_analyst = 1
 for i in range(sheet_jii_list.nrows):
+    print('step 0')
     pd_data = []
     emiten = sheet_jii_list.cell_value(i, 0)
     print(f'proses {emiten} {i}/{sheet_jii_list.nrows}')
     source_html = 'https://finance.yahoo.com/quote/'+emiten+'.JK/history?p='+emiten+'.JK'
-    src = requests.get(source_html).text
+    src = requests.get(source_html)
+    print(type(src))
+    print('step1')
+    src = src.text
+    print(type(src))
     soup = BeautifulSoup(src,'lxml')
     table = soup.findAll('table')[0]
     body = table.findAll('tbody')[0]
     rows = body.findAll('tr')
-    uu = 0
     characters_to_remove = [',','.00']
     time_format = '%b %d, %Y' 
     baris_emiten = 1
@@ -161,7 +165,6 @@ for i in range(sheet_jii_list.nrows):
 
 wb_analyst.save('/home/prasojo/belajar/BelajarData/dataset/saham/JII_analysis.xlsx') 
 # wb_chart.save('/home/prasojo/belajar/BelajarData/dataset/JII_chart.xlsx')
-
 
 
 
