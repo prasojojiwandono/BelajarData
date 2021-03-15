@@ -6,7 +6,6 @@ import xlrd
 from xlwt import Workbook 
 import plotly.graph_objects as go
 import pandas as pd
-import ipdb
 import openpyxl
 from time import sleep
 import os
@@ -52,7 +51,8 @@ class PostsSpider(scrapy.Spider):
 
 
         if self.itung == len(self.start_urls):
-            self.wb_analyst.save('/home/prasojo/belajar/BelajarData/dataset/saham/JII_analysis.xlsx') 
+            self.wb_analyst.save('/home/prasojo/belajar/BelajarData/dataset/saham/JII_analysis.xlsx')
+            sleep(5) # menaruh sleep penting agar proses save document semua selesai total
             from matplotlib.pyplot import savefig
             import mplfinance as mpf
             directory = '/home/prasojo/belajar/BelajarData/dataset/saham/emiten'
@@ -261,6 +261,7 @@ class PostsSpider(scrapy.Spider):
             self.list_jii70.append(emiten)
 
         sheet_jii_large = wb_jii_list.sheet_by_index(1)
+        # self.start_urls.append('https://finance.yahoo.com/quote/AALI.JK/history?p=AALI.JK')
         for i in range(sheet_jii_large.nrows):
             emiten = sheet_jii_large.cell_value(i, 0)
             self.start_urls.append('https://finance.yahoo.com/quote/'+emiten+'.JK/history?p='+emiten+'.JK')
