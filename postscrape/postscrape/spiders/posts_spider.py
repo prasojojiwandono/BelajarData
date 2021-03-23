@@ -120,12 +120,12 @@ class PostsSpider(scrapy.Spider):
         # current_high = df['High'][0]
         rsi5 = self.calculate_rsi(df['Close'], rsi_coverage=5)
         con_a = current_close >= previous_close
-        # con_b = current_close > current_open
-        # con_c = current_close == current_open
-        # con_d = current_high > (1.01*current_close)
+        con_b = current_close < previous_close
+        con_c = current_close > current_open
+        con_d = con_b and con_c
         # con_e = con_b or (con_c and con_d)
         con_f = rsi5 <= 30
-        if con_a and con_f:
+        if (con_a or con_d) and con_f:
             return 'low'
         return '---'
 
