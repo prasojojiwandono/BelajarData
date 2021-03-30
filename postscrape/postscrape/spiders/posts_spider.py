@@ -6,7 +6,7 @@ import xlrd
 from xlwt import Workbook 
 import plotly.graph_objects as go
 import pandas as pd
-import openpyxl
+from openpyxl import load_workbook
 from time import sleep
 import os
 import numpy as np
@@ -18,7 +18,7 @@ from statistics import mean
 class PostsSpider(scrapy.Spider):
     name = 'posts'
     #######begin bagian yang diubah ubah
-    partisi = 0
+    partisi = 2
     #######end bagian yang diubah ubah
     start_urls = []
     list_emiten_used = []
@@ -51,21 +51,22 @@ class PostsSpider(scrapy.Spider):
             src = requests.get(response.url).text
             rows = self.get_table_row(src)
 
-        self.rows_process(rows, emiten)
+        if len(rows) >= 90:
+            self.rows_process(rows, emiten)
 
 
         if self.itung == len(self.start_urls):
-            self.wb_analyst.save('/home/prasojo/belajar/BelajarData/dataset/saham/JII_analysis.xlsx')
+            self.wb_analyst.save('D:\BelajarData\dataset\saham\JII_analysis.xlsx')
             from matplotlib.pyplot import savefig
             import mplfinance as mpf
-            directory = '/home/prasojo/belajar/BelajarData/dataset/saham/emiten'
-            pic_directory = '/home/prasojo/belajar/BelajarData/dataset/saham/emiten_pic'
-            pic_directory_up = '/home/prasojo/belajar/BelajarData/dataset/saham/emiten_pic_up'
+            directory = 'D:\BelajarData\dataset\saham\emiten'
+            pic_directory = 'D:\BelajarData\dataset\saham\emiten_pic'
+            pic_directory_up = 'D:\BelajarData\dataset\saham\emiten_pic_up'
             count_pic = 1
             stats_data = []
             for filename in os.listdir(directory):
-                file_name = f'{directory}/{filename}'
-                df_saham = pd.read_excel(file_name)
+                file_name = f'{directory}\{filename}'
+                df_saham = pd.read_excel(file_name, engine='openpyxl')
                 stat_data = self.stat_process(df_saham)
                 stats_data.append(stat_data)
                 if df_saham['JII'][0] in self.list_emiten_used:
@@ -74,23 +75,23 @@ class PostsSpider(scrapy.Spider):
                         df_saham = df_saham.set_index(pd.DatetimeIndex(df_saham['date'].values))
                         emiten = filename.split('.')[0]
                         print(emiten, count_pic)
-                        pic_file_name = f'{pic_directory_up}/{emiten}.jpg'
+                        pic_file_name = f'{pic_directory_up}\{emiten}.jpg'
                         save = dict(fname=pic_file_name,dpi=100)
-                        mpf.plot(df_saham,type='candle',mav=(3,7),volume=True,figsize=(25,15),savefig=save)
+                        mpf.plot(df_saham,type='candle',mav=(3,7),volume=True,figsize=(25,15),savefig=save,title=emiten)
                         count_pic += 1                    
                     elif df_saham['JII'][0] in self.list_jii70:
                         df_saham = df_saham.reindex(index=df_saham.index[::-1])
                         df_saham = df_saham.set_index(pd.DatetimeIndex(df_saham['date'].values))
                         emiten = filename.split('.')[0]
                         print(emiten, count_pic)
-                        pic_file_name = f'{pic_directory}/{emiten}.jpg'
+                        pic_file_name = f'{pic_directory}\{emiten}.jpg'
                         save = dict(fname=pic_file_name,dpi=100)
-                        mpf.plot(df_saham,type='candle',mav=(3,7),volume=True,figsize=(25,15),savefig=save)
+                        mpf.plot(df_saham,type='candle',mav=(3,7),volume=True,figsize=(25,15),savefig=save,title=emiten)
                         count_pic += 1
             df_stat = pd.DataFrame(stats_data,
                                     columns=['emiten', 'macd', 'up_near_macd','get_low', 'rsi','percent_volum',
                                             'Open','High','Low','Close','Volume'])
-            df_stat.to_excel(f'/home/prasojo/belajar/BelajarData/dataset/saham/analisa_saham_harian_v3.xlsx')
+            df_stat.to_excel('D:\BelajarData\dataset\saham\daily_stock_analysis_v3.xlsx')
             self.sesudah = datetime.now()
             selisih = self.sesudah - self.sebelum
             print(selisih)
@@ -116,7 +117,7 @@ class PostsSpider(scrapy.Spider):
     def get_low(self, df):
         current_close = df['Close'][0]
         previous_close = df['Close'][1]
-        # current_open = df['Open'][0]
+        current_open = df['Open'][0]
         # current_high = df['High'][0]
         rsi5 = self.calculate_rsi(df['Close'], rsi_coverage=5)
         con_a = current_close >= previous_close
@@ -269,7 +270,7 @@ class PostsSpider(scrapy.Spider):
                 break
 
     def create_stock_file(self, df_saham, emiten):
-        df_saham.to_excel(f'/home/prasojo/belajar/BelajarData/dataset/saham/emiten/{emiten}.xlsx')
+        df_saham.to_excel(f'D:\BelajarData\dataset\saham\emiten\{emiten}.xlsx')
         # df_saham = df_saham.reindex(index=df_saham.index[::-1])
         # df_saham = df_saham.set_index(pd.DatetimeIndex(df_saham['date'].values))
         # figure = go.Figure(
@@ -288,25 +289,25 @@ class PostsSpider(scrapy.Spider):
         #             title=go.layout.Title(text=emiten)
         #         )
         #     )
-        # figure.write_image(file = '/home/prasojo/belajar/BelajarData/dataset/saham/'+emiten+'.png',
+        # figure.write_image(file = 'D:\BelajarData\dataset\saham\'+emiten+'.png',
         #           width = 1600,
         #           height = 1000)
 
     def isi_urls(self):
-        loc = ("/home/prasojo/belajar/BelajarData/dataset/saham/JII.xlsx")
-        wb_jii_list = xlrd.open_workbook(loc)
+        loc = "D:\BelajarData\dataset\saham\JII.xlsx"
+        wb_jii_list = load_workbook(loc)
 
-        sheet_jii_70 = wb_jii_list.sheet_by_index(0)
-        for x in range(sheet_jii_70.nrows):
-            emiten = sheet_jii_70.cell_value(x, 0)
+        sheet_jii_70 = wb_jii_list[wb_jii_list.sheetnames[0]]
+        for x in range(sheet_jii_70.max_row):
+            emiten = sheet_jii_70[f'A{str(x+1)}'].value
             self.list_jii70.append(emiten)
 
-        sheet_jii_large = wb_jii_list.sheet_by_index(1)
+        sheet_jii_large = wb_jii_list[wb_jii_list.sheetnames[1]]
         # self.start_urls.append('https://finance.yahoo.com/quote/HRUM.JK/history?p=HRUM.JK')
         # self.list_emiten_used.append('HRUM')
         hitung = 0
-        for i in range(sheet_jii_large.nrows):
-            emiten = sheet_jii_large.cell_value(i, 0)
+        for i in range(sheet_jii_large.max_row):
+            emiten = sheet_jii_large[f'A{str(i+1)}'].value
             if (hitung%3) == self.partisi:
                 self.list_emiten_used.append(emiten)
                 self.start_urls.append('https://finance.yahoo.com/quote/'+emiten+'.JK/history?p='+emiten+'.JK')
@@ -324,15 +325,15 @@ class PostsSpider(scrapy.Spider):
 
     def delete_files(self):
         list_dir=[
-            '/home/prasojo/belajar/BelajarData/dataset/saham/emiten',
-            '/home/prasojo/belajar/BelajarData/dataset/saham/emiten_pic',
-            '/home/prasojo/belajar/BelajarData/dataset/saham/emiten_pic_up',
+            'D:\BelajarData\dataset\saham\emiten',
+            'D:\BelajarData\dataset\saham\emiten_pic',
+            'D:\BelajarData\dataset\saham\emiten_pic_up',
         ]
         for dir in list_dir:
             if len(os.listdir(dir)) > 0:
                 for filename in os.listdir(dir):
                     emiten = filename.split('.')[0]
-                    file_name = f'{dir}/{filename}'
+                    file_name = f'{dir}\{filename}'
                     if os.path.isfile(file_name):
                         if emiten in self.list_emiten_used:
                             os.remove(file_name)
