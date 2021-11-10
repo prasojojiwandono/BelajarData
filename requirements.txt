@@ -13,3 +13,6 @@ openpyxl==3.0.7
 statistics==1.0.3.5
 scrapy-fake-useragent==1.4.4
 scrapy-user-agents==0.1.1 
+jupyterlab==3.2.2 
+notebook==6.4.5 
+ipykernel==6.5.0
