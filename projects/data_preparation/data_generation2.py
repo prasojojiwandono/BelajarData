@@ -46,7 +46,7 @@ def generate_ecommerce_data():
 def generate_hospital_data():
     departments = ['ER', 'Surgery', 'ICU', 'Maternity', 'Pediatrics']
     start_date = datetime(2024, 1, 1)
-    days = 30
+    days = 365
     dates = generate_dates(start_date, days)
 
     data = []
@@ -136,8 +136,8 @@ if __name__ == "__main__":
     df_sales, df_inventory = generate_restaurant_data()
 
     # Save to CSV if needed
-    df_ecom.to_csv("ecommerce_data.csv", index=False)
-    # df_hosp.to_csv("hospital_data.csv", index=False)
+    # df_ecom.to_csv("ecommerce_data.csv", index=False)
+    df_hosp.to_csv("hospital_data.csv", index=False)
     # df_attendance.to_csv("school_attendance.csv", index=False)
     # df_teacher.to_csv("teacher_feedback.csv", index=False)
     # df_budget.to_csv("school_budget.csv", index=False)
